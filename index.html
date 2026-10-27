@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>চক্র – মাসিক ও ডিম্বস্ফোটন ট্র্যাকার</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f3f8;--card:#fff;--ink:#2a1f36;--mute:#6f6480;--line:#e6dfec;--per:#c8325a;--fer:#2f9e8f;--ov:#e9a23b;--acc:#4a2c6d}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#17111f;--card:#231b2e;--ink:#f1eaf7;--mute:#a99bbb;--line:#3a2f48;--per:#ef5f85;--fer:#4cc3b3;--ov:#f2b75a;--acc:#b89be0}}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;font-family:'Hind Siliguri',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;padding:env(safe-area-inset-top,0) 0 calc(72px + env(safe-area-inset-bottom,0))}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:8px 0 2px}h2{font-size:1.1rem;margin:0 0 10px}
+.sub{color:var(--mute);margin:0 0 16px;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.hero{background:var(--acc);color:#fff;border:0}
+.hero .big{font-size:2.2rem;font-weight:700;line-height:1.2}
+.hero small{opacity:.85}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat b{display:block;font-size:1.05rem}.stat span{color:var(--mute);font-size:.85rem}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+label{display:block;font-weight:500;margin:10px 0 4px;font-size:.92rem}
+input,select,textarea,button{font:inherit;color:inherit}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 16px;background:var(--acc);color:#fff;font-weight:500}
+button.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.del{background:transparent;color:var(--per);padding:4px 8px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.nav a:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .h{color:var(--mute);font-size:.8rem}
+.cal .d{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:.9rem;border:2px solid transparent;cursor:pointer;background:transparent}
+.d.per{background:var(--per);color:#fff}.d.pp{border-color:var(--per);border-style:dashed}
+.d.fer{background:color-mix(in srgb,var(--fer) 30%,transparent)}.d.ov{background:var(--ov);color:#2a1f36;font-weight:700}
+.d.today{box-shadow:0 0 0 2px var(--ink)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.82rem;color:var(--mute);margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips label{margin:0;border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-weight:400;cursor:pointer}
+.chips input{display:none}.chips input:checked+span{font-weight:700;color:var(--per)}
+.chips label:has(input:checked){border-color:var(--per)}
+ul.list{list-style:none;margin:0;padding:0}
+ul.list li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+ul.list li:last-child{border:0}
+.warn{background:color-mix(in srgb,var(--ov) 22%,var(--card));border-color:var(--ov)}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
+.nav a{flex:1;text-align:center;padding:12px 4px;color:var(--mute);text-decoration:none;font-size:.9rem}
+.nav a[aria-current=page]{color:var(--per);font-weight:700}
+.view{display:none}.view.on{display:block}
+.note{font-size:.82rem;color:var(--mute)}
+</style>
+</head>
+<body>
+<main>
+<h1>চক্র</h1>
+<p class="sub">মাসিক, ডিম্বস্ফোটন ও উর্বর সময়ের আনুমানিক হিসাব</p>
+
+<section id="home" class="view on">
+  <div id="hero" class="card hero"></div>
+  <div id="alert"></div>
+  <div class="grid" id="stats"></div>
+  <div class="card" style="margin-top:14px"><h2>আজকের পর্যায়</h2><div id="phase"></div></div>
+</section>
+
+<section id="cal" class="view">
+  <div class="card">
+    <div class="row" style="margin-bottom:10px"><button class="alt" id="pm" aria-label="আগের মাস">‹</button><b id="mt" style="text-align:center"></b><button class="alt" id="nm" aria-label="পরের মাস">›</button></div>
+    <div class="cal" id="grid"></div>
+    <div class="legend"><span><i class="dot" style="background:var(--per)"></i>মাসিক</span><span><i class="dot" style="border:2px dashed var(--per)"></i>সম্ভাব্য মাসিক</span><span><i class="dot" style="background:var(--fer);opacity:.5"></i>উর্বর সময়</span><span><i class="dot" style="background:var(--ov)"></i>ডিম্বস্ফোটন</span></div>
+  </div>
+</section>
+
+<section id="log" class="view">
+  <div class="card">
+    <h2>মাসিক শুরু / শেষ</h2>
+    <label for="ps">মাসিকের প্রথম দিন</label><input type="date" id="ps">
+    <label for="pe">শেষ দিন (জানা থাকলে)</label><input type="date" id="pe">
+    <p class="row" style="margin-top:12px"><button id="addC">মাসিক সেভ করুন</button></p>
+    <p class="note" id="cmsg" role="status"></p>
+  </div>
+  <div class="card">
+    <h2>দৈনিক জার্নাল</h2>
+    <label for="ld">তারিখ</label><input type="date" id="ld">
+    <div class="row"><div><label for="fl">রক্তপাত</label><select id="fl"><option value="">—</option><option>নেই</option><option>হালকা</option><option>মাঝারি</option><option>বেশি</option></select></div>
+    <div><label for="md">মেজাজ</label><select id="md"><option value="">—</option><option>ভালো</option><option>স্বাভাবিক</option><option>খিটখিটে</option><option>মন খারাপ</option></select></div></div>
+    <label>উপসর্গ</label>
+    <div class="chips" id="sy"></div>
+    <label for="nt">নোট</label><textarea id="nt" rows="3"></textarea>
+    <p style="margin-top:12px"><button id="addL">জার্নাল সেভ করুন</button></p>
+    <p class="note" id="lmsg" role="status"></p>
+  </div>
+</section>
+
+<section id="hist" class="view">
+  <div class="card"><h2>চক্রের ইতিহাস</h2><div id="hl"></div></div>
+  <div class="card"><h2>সাম্প্রতিক জার্নাল</h2><div id="ll"></div></div>
+  <div class="card">
+    <h2>সেটিংস</h2>
+    <div class="row"><div><label for="cl">গড় চক্র (দিন)</label><input type="number" id="cl" min="21" max="45"></div>
+    <div><label for="pd">মাসিক কত দিন থাকে</label><input type="number" id="pd" min="1" max="12"></div></div>
+    <p class="note">২টির বেশি মাসিক লগ করলে গড় চক্র স্বয়ংক্রিয়ভাবে ইতিহাস থেকে হিসাব হবে।</p>
+    <div class="row" style="margin-top:12px"><button id="sv">সেটিংস সেভ</button><button class="alt" id="ex">CSV ডাউনলোড</button><button class="alt" id="cd">সব তথ্য মুছুন</button></div>
+    <p class="note" id="smsg" role="status"></p>
+  </div>
+  <div class="card"><h2>গুরুত্বপূর্ণ সতর্কতা</h2>
+    <p class="note">এখানকার সব তারিখ ক্যালেন্ডারভিত্তিক অনুমান। প্রকৃত ডিম্বস্ফোটন আগে-পরে হতে পারে। এই হিসাব দিয়ে গর্ভধারণ নিশ্চিত করা বা প্রতিরোধ করা যায় না। মাসিক দেরি হলেই গর্ভাবস্থা নয়। অতিরিক্ত রক্তপাত, তীব্র ব্যথা বা অজ্ঞান হওয়ার মতো অনুভূতি হলে চিকিৎসকের কাছে যান। এটি রোগ নির্ণয়ের বিকল্প নয়। আপনার তথ্য শুধু এই ডিভাইসের ব্রাউজারে সংরক্ষিত থাকে।</p></div>
+</section>
+</main>
+
+<nav class="nav" aria-label="প্রধান মেনু">
+<a href="#home" aria-current="page">হোম</a><a href="#cal">ক্যালেন্ডার</a><a href="#log">লগ</a><a href="#hist">ইতিহাস</a>
+</nav>
+
+<script>
+const K='cycle-tracker-v1', $=id=>document.getElementById(id);
+const SYM=['পেটব্যথা','মাথাব্যথা','পিঠব্যথা','ক্লান্তি','ফোলাভাব','স্রাব বেশি','ঘুম কম','খাবারে রুচি বেশি'];
+let S={cl:28,pd:5,cycles:[],logs:{}};
+try{const r=JSON.parse(localStorage.getItem(K)||'null');if(r)S=Object.assign(S,r)}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S));return true}catch(e){return false}};
+const P=s=>new Date(s+'T12:00:00'), pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const add=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const diff=(a,b)=>Math.round((b-a)/864e5);
+const today=()=>{const t=new Date();t.setHours(12,0,0,0);return t};
+const bn=n=>Number(n).toLocaleString('bn-BD');
+const fd=d=>d.toLocaleDateString('bn-BD',{day:'numeric',month:'long'});
+const fdy=d=>d.toLocaleDateString('bn-BD',{day:'numeric',month:'long',year:'numeric'});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function gaps(){const s=S.cycles.map(c=>c.start).sort();const g=[];for(let i=1;i<s.length;i++){const x=diff(P(s[i-1]),P(s[i]));if(x>=15&&x<=90)g.push(x)}return g.slice(-6)}
+function avg(){const g=gaps();return g.length>=2?Math.round(g.reduce((a,b)=>a+b,0)/g.length):S.cl}
+function calc(){
+  const s=S.cycles.map(c=>c.start).sort();if(!s.length)return null;
+  const last=P(s[s.length-1]),L=avg(),g=gaps();
+  const n=[1,2,3].map(i=>{const nx=add(last,L*i),ov=add(nx,-14);return{next:nx,ov,fs:add(ov,-5),fe:add(ov,1)}});
+  return{last,L,n,var:g.length>=2?Math.max(...g)-Math.min(...g):null,count:g.length}
+}
+function isPer(d){return S.cycles.some(c=>{const a=P(c.start),e=c.end?P(c.end):add(a,S.pd-1);return d>=a&&d<=e})}
+
+function renderHome(){
+  const c=calc(),h=$('hero'),st=$('stats'),al=$('alert'),ph=$('phase');al.innerHTML='';
+  if(!c){h.innerHTML='<div class="big">শুরু করুন</div><p>"লগ" ট্যাবে আপনার সর্বশেষ মাসিকের প্রথম দিন দিন। তারপর আনুমানিক হিসাব এখানে দেখা যাবে।</p>';st.innerHTML='';ph.textContent='এখনো কোনো তথ্য নেই।';return}
+  const t=today(),nx=c.n[0],dl=diff(t,nx.next),day=diff(c.last,t)+1;
+  h.innerHTML=dl>=0?`<small>পরবর্তী মাসিক (আনুমানিক)</small><div class="big">${fd(nx.next)}</div><small>${dl===0?'আজ হতে পারে':bn(dl)+' দিন বাকি'}</small>`:`<small>পরবর্তী মাসিক (আনুমানিক ছিল)</small><div class="big">${fd(nx.next)}</div><small>${bn(-dl)} দিন দেরি</small>`;
+  if(dl<-7)al.innerHTML='<div class="card warn">মাসিক ৭ দিনের বেশি দেরি হয়েছে। চাইলে প্রেগন্যান্সি টেস্ট করুন বা চিকিৎসকের পরামর্শ নিন।</div>';
+  else if(c.var!==null&&c.var>7)al.innerHTML='<div class="card warn">আপনার চক্রের দৈর্ঘ্যে বেশ ওঠানামা আছে ('+bn(c.var)+' দিন)। তাই পূর্বাভাস কম নির্ভরযোগ্য হতে পারে।</div>';
+  const fut=nx.ov>=t?nx:c.n[0];
+  st.innerHTML=`<div class="card stat"><span><i class="dot" style="background:var(--ov)"></i>ডিম্বস্ফোটন (আনুমানিক)</span><b>${fd(nx.ov)}</b></div>
+  <div class="card stat"><span><i class="dot" style="background:var(--fer)"></i>উর্বর সময়</span><b>${fd(nx.fs)} – ${fd(nx.fe)}</b></div>
+  <div class="card stat"><span>আজ চক্রের</span><b>${day>0?bn(day)+' তম দিন':'—'}</b></div>
+  <div class="card stat"><span>ব্যবহৃত চক্র</span><b>${bn(c.L)} দিন</b><span>${c.count>=2?'ইতিহাস থেকে গড়':'সেটিংস থেকে'}</span></div>`;
+  let p='';
+  if(day<1)p='';else if(isPer(t))p='মাসিক পর্যায় (Menstrual)';else if(t<nx.fs&&day<=c.L)p='ফলিকুলার পর্যায় (Follicular)';else if(t>=nx.fs&&t<=nx.fe)p='ডিম্বস্ফোটন / উর্বর পর্যায় (Ovulation)';else if(day<=c.L)p='লুটিয়াল পর্যায় (Luteal)';else p='পরবর্তী মাসিকের অপেক্ষা';
+  ph.innerHTML=p?`<b>${p}</b><p class="note">এটি আনুমানিক। শরীরের অনুভূতি ও উপসর্গের সঙ্গে মিলিয়ে দেখুন।</p>`:'—';
+}
+
+let cm=today();cm.setDate(1);
+function renderCal(){
+  const c=calc(),g=$('grid'),y=cm.getFullYear(),m=cm.getMonth(),t=iso(today());
+  $('mt').textContent=cm.toLocaleDateString('bn-BD',{month:'long',year:'numeric'});
+  let h=['র','সো','ম','বু','বৃ','শু','শ'].map(x=>`<div class="h">${x}</div>`).join('');
+  for(let i=0;i<cm.getDay();i++)h+='<div></div>';
+  const days=new Date(y,m+1,0).getDate();
+  for(let d=1;d<=days;d++){
+    const dt=new Date(y,m,d,12),k=iso(dt);let cl='d';
+    if(isPer(dt))cl+=' per';
+    if(c)for(const n of c.n){
+      if(dt>=n.next&&dt<=add(n.next,S.pd-1)&&!isPer(dt))cl+=' pp';
+      if(k===iso(n.ov))cl+=' ov';else if(dt>=n.fs&&dt<=n.fe)cl+=' fer';
+    }
+    if(k===t)cl+=' today';
+    h+=`<button class="${cl}" data-d="${k}" aria-label="${fdy(dt)}">${bn(d)}</button>`;
+  }
+  g.innerHTML=h;
+}
+$('pm').onclick=()=>{cm.setMonth(cm.getMonth()-1);renderCal()};
+$('nm').onclick=()=>{cm.setMonth(cm.getMonth()+1);renderCal()};
+$('grid').onclick=e=>{const b=e.target.closest('[data-d]');if(!b)return;$('ld').value=b.dataset.d;$('ps').value=b.dataset.d;location.hash='#log';loadLog()};
+
+$('sy').innerHTML=SYM.map(s=>`<label><input type="checkbox" value="${s}"><span>${s}</span></label>`).join('');
+function loadLog(){const l=S.logs[$('ld').value]||{};$('fl').value=l.flow||'';$('md').value=l.mood||'';$('nt').value=l.note||'';document.querySelectorAll('#sy input').forEach(i=>i.checked=(l.sym||[]).includes(i.value))}
+$('ld').onchange=loadLog;
+
+$('addC').onclick=()=>{
+  const s=$('ps').value,e=$('pe').value,m=$('cmsg');
+  if(!s){m.textContent='মাসিকের প্রথম দিনের তারিখ দিন।';return}
+  if(P(s)>today()){m.textContent='ভবিষ্যতের তারিখ দেওয়া যাবে না।';return}
+  if(e&&P(e)<P(s)){m.textContent='শেষ দিন প্রথম দিনের আগে হতে পারে না।';return}
+  if(e&&diff(P(s),P(e))>14){m.textContent='মাসিক ১৫ দিনের বেশি হতে পারে না। তারিখ আবার দেখুন।';return}
+  const dup=S.cycles.find(c=>Math.abs(diff(P(c.start),P(s)))<10&&c.start!==s);
+  if(dup){m.textContent='এই তারিখের কাছাকাছি আরেকটি মাসিক সেভ করা আছে ('+fdy(P(dup.start))+')।';return}
+  const i=S.cycles.findIndex(c=>c.start===s);
+  if(i>=0)S.cycles[i].end=e||'';else S.cycles.push({start:s,end:e||''});
+  S.cycles.sort((a,b)=>a.start<b.start?-1:1);
+  m.textContent=save()?'সেভ হয়েছে।':'সেভ করা যায়নি। ব্রাউজারের স্টোরেজ বন্ধ থাকতে পারে।';
+  renderAll()
+};
+$('addL').onclick=()=>{
+  const d=$('ld').value,m=$('lmsg');if(!d){m.textContent='তারিখ দিন।';return}
+  S.logs[d]={flow:$('fl').value,mood:$('md').value,note:$('nt').value.slice(0,500),sym:[...document.querySelectorAll('#sy input:checked')].map(i=>i.value)};
+  m.textContent=save()?'সেভ হয়েছে।':'সেভ করা যায়নি।';renderHist()
+};
+
+function renderHist(){
+  const hl=$('hl'),ll=$('ll');
+  hl.innerHTML=S.cycles.length?'<ul class="list">'+[...S.cycles].reverse().map((c,i,a)=>{const nxt=a[i-1]?diff(P(c.start),P(a[i-1].start)):null;return`<li><span>${fdy(P(c.start))}${c.end?' – '+fd(P(c.end)):''}<br><small class="note">${nxt?'চক্র: '+bn(nxt)+' দিন':'চলমান / সর্বশেষ'}</small></span><button class="del" data-c="${c.start}" aria-label="মুছুন">মুছুন</button></li>`}).join('')+'</ul>':'<p class="note">এখনো কোনো মাসিক লগ করা হয়নি।</p>';
+  const ks=Object.keys(S.logs).sort().reverse().slice(0,7);
+  ll.innerHTML=ks.length?'<ul class="list">'+ks.map(k=>{const l=S.logs[k];return`<li><span><b>${fd(P(k))}</b><br><small class="note">${esc([l.flow&&'রক্তপাত: '+l.flow,l.mood,...(l.sym||[]),l.note].filter(Boolean).join(' · '))}</small></span><button class="del" data-l="${k}" aria-label="মুছুন">মুছুন</button></li>`}).join('')+'</ul>':'<p class="note">এখনো কোনো জার্নাল নেই।</p>';
+}
+$('hist').onclick=e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.c){S.cycles=S.cycles.filter(c=>c.start!==b.dataset.c);save();renderAll()}
+  if(b.dataset.l){delete S.logs[b.dataset.l];save();renderHist()}};
+
+$('sv').onclick=()=>{const a=+$('cl').value,b=+$('pd').value;
+  if(!(a>=21&&a<=45)||!(b>=1&&b<=12)){$('smsg').textContent='চক্র ২১–৪৫ দিন ও মাসিক ১–১২ দিনের মধ্যে দিন।';return}
+  S.cl=a;S.pd=b;$('smsg').textContent=save()?'সেভ হয়েছে।':'সেভ করা যায়নি।';renderAll()};
+$('ex').onclick=()=>{
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  let t='\ufeffধরন,তারিখ,শেষ/রক্তপাত,মেজাজ,উপসর্গ,নোট\n';
+  S.cycles.forEach(c=>t+=['মাসিক',c.start,c.end].map(q).join(',')+'\n');
+  Object.keys(S.logs).sort().forEach(k=>{const l=S.logs[k];t+=['জার্নাল',k,l.flow,l.mood,(l.sym||[]).join('; '),l.note].map(q).join(',')+'\n'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'}));a.download='cycle-data.csv';a.click()};
+$('cd').onclick=()=>{if(confirm('সব মাসিক ও জার্নাল তথ্য এই ডিভাইস থেকে মুছে যাবে। নিশ্চিত?')){S={cl:28,pd:5,cycles:[],logs:{}};try{localStorage.removeItem(K)}catch(e){}renderAll()}};
+
+function renderAll(){$('cl').value=S.cl;$('pd').value=S.pd;renderHome();renderCal();renderHist()}
+function route(){const id=(location.hash||'#home').slice(1);const v=$(id)&&$(id).classList.contains('view')?id:'home';
+  document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id===v));
+  document.querySelectorAll('.nav a').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+v)||a.removeAttribute('aria-current'));
+  document.querySelectorAll('.nav a').forEach(a=>{if(a.getAttribute('href')==='#'+v)a.setAttribute('aria-current','page')});window.scrollTo(0,0)}
+addEventListener('hashchange',route);
+$('ld').value=iso(today());$('ps').max=$('ld').max=iso(today());
+loadLog();renderAll();route();
+</script>
+</body>
+</html>
