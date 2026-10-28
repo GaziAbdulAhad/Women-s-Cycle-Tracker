@@ -3,7 +3,7 @@ main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 [vars]
-GOOGLE_CLIENT_ID = "https://script.google.com/macros/s/AKfycbzXa8fmRnVdtqbO66MruGU7__XIbHm2XLt14DLES0u7MTr9MYdG-JHOivkBonXNE7eJ/exec"
+GOOGLE_CLIENT_ID = "927245903402-lnbr8uv3rh8hsrk53t6pb67442jaq2cr.apps.googleusercontent.com"
 # Origin only: scheme + host, NO path and NO trailing slash (e.g. https://username.github.io)
 ALLOWED_ORIGIN = "https://gaziabdulahad.github.io/Women-s-Cycle-Tracker/"
 SESSION_TTL_SECONDS = "7200"
