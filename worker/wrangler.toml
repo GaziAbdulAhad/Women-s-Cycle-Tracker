@@ -3,14 +3,14 @@ main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 [vars]
-GOOGLE_CLIENT_ID = "YOUR_CLIENT_ID.apps.googleusercontent.com"
+GOOGLE_CLIENT_ID = "https://script.google.com/macros/s/AKfycbzXa8fmRnVdtqbO66MruGU7__XIbHm2XLt14DLES0u7MTr9MYdG-JHOivkBonXNE7eJ/exec"
 # Origin only: scheme + host, NO path and NO trailing slash (e.g. https://username.github.io)
-ALLOWED_ORIGIN = "https://YOUR-USERNAME.github.io"
+ALLOWED_ORIGIN = "https://gaziabdulahad.github.io/Women-s-Cycle-Tracker/"
 SESSION_TTL_SECONDS = "7200"
 
 [[kv_namespaces]]
 binding = "SESSIONS"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "4ccd76f75a254f5e91405f8cb21ee2e6"
 
 # Secrets are NOT stored here. Set them with:
 #   npx wrangler secret put GATEWAY_SECRET     (same value as the Apps Script property)
