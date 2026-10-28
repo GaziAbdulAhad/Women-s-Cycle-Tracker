@@ -6,3 +6,4 @@ export const CONFIG = {
 export const POLICY_VERSION = "2026-10-draft"; // bump when privacy/terms/disclaimer change: users must accept again
 export const CONSENT_TYPES = ["privacy_policy", "terms", "medical_disclaimer"];
 export const isConfigured = () => !/YOUR[-_]/.test(CONFIG.API_BASE_URL + CONFIG.GOOGLE_CLIENT_ID);
+
