@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; connect-src 'self' https://*.workers.dev; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>ক্যালেন্ডার – চক্র</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<a class="skip" href="#main">মূল অংশে যান</a>
+<header class="site-header" id="site-header"></header>
+<main id="main" tabindex="-1">
+<h1>ক্যালেন্ডার</h1><div id="err"></div><div class="card"><div class="row"><button class="btn alt" id="prev" type="button" aria-label="আগের">‹</button><strong id="cal-title" aria-live="polite"></strong><button class="btn alt" id="next" type="button" aria-label="পরের">›</button><button class="btn alt" id="todayBtn" type="button">আজ</button><button class="btn alt" id="viewBtn" type="button">সাপ্তাহিক ভিউ</button></div><div id="cal" class="cal"></div><div class="legend"><span>● প্রকৃত মাসিক</span><span>○ সম্ভাব্য মাসিক (আনুমানিক)</span><span>~ উর্বর সময় (আনুমানিক)</span><span>★ সম্ভাব্য ডিম্বস্ফোটন (আনুমানিক)</span><span>✎ জার্নাল আছে</span></div></div><section id="details" class="card" aria-live="polite"></section><p class="mute">প্রকৃত দিন আপনার লগ করা তথ্য; বাকিগুলো অনুমান।</p>
+</main>
+<footer class="site-footer" id="site-footer"></footer>
+<script type="module" src="js/pages/calendar.js"></script>
+</body>
+</html>

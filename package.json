@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/cycle-engine.test.js tests/calendar-model.test.js tests/csv-report.test.js tests/apps-script.test.js tests/worker.test.js tests/frontend-static.test.js tests/frontend-smoke.test.js"
+  },
+  "devDependencies": { "jsdom": "^26.0.0" }
+}

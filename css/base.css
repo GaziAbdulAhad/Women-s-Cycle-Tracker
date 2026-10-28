@@ -1,0 +1,11 @@
+:root{--bg:#faf7fb;--card:#fff;--ink:#241a2f;--mute:#6b5f7a;--line:#e5dcec;--accent:#5b2f8a;--accent-ink:#fff;--per:#b8264f;--fer:#1d7f73;--ov:#b9770e;--warn:#fff3d6;--err:#fde8ea;--ok:#e3f5ee}
+@media (prefers-color-scheme:dark){:root{--bg:#161020;--card:#211a2d;--ink:#f0e9f7;--mute:#a99dbb;--line:#3a2f49;--accent:#b99be6;--accent-ink:#1a1026;--per:#ff7a9c;--fer:#5ed0c1;--ov:#f0b45a;--warn:#3a2f12;--err:#3d1a22;--ok:#13322a}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Noto Sans Bengali","Hind Siliguri","Kalpurush",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;font-size:1rem}
+h1{font-size:1.6rem;margin:.2em 0 .4em}h2{font-size:1.2rem;margin:0 0 .6em}h3{font-size:1.05rem;margin:0 0 .4em}
+a{color:var(--accent)}p{margin:.4em 0 .8em}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:8px;z-index:10}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mute{color:var(--mute)}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+[hidden]{display:none!important}

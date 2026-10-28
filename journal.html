@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; connect-src 'self' https://*.workers.dev; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>জার্নাল – চক্র</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<a class="skip" href="#main">মূল অংশে যান</a>
+<header class="site-header" id="site-header"></header>
+<main id="main" tabindex="-1">
+<h1>দৈনিক জার্নাল</h1><form id="jform" class="card"><label for="jdate">তারিখ</label><input type="date" id="jdate" required><div class="cols"><div><label for="flow">রক্তপাত</label><select id="flow"></select></div><div><label for="mood">মেজাজ</label><select id="mood"></select></div></div><label for="sleep">ঘুম (ঘণ্টা)</label><input type="number" id="sleep" min="0" max="24" step="0.5"><label id="symlbl">উপসর্গ (ঐচ্ছিক)</label><div class="chips" id="sym" role="group" aria-labelledby="symlbl"></div><label for="custom">অন্যান্য উপসর্গ (কমা দিয়ে)</label><input type="text" id="custom" maxlength="200"><label for="jnotes">নোট ও ওষুধ (ঐচ্ছিক)</label><textarea id="jnotes" rows="3" maxlength="1000"></textarea><p class="row"><button class="btn" id="saveBtn" type="submit">সেভ করুন</button><button class="btn danger" id="delBtn" type="button" hidden>মুছুন</button></p></form><div id="msg" role="status" aria-live="polite"></div><div class="card"><h2>সাম্প্রতিক এন্ট্রি</h2><div id="recent"></div></div><p class="mute">এখানকার তথ্য থেকে আমরা কোনো রোগ বা গর্ভাবস্থা অনুমান করি না।</p>
+</main>
+<footer class="site-footer" id="site-footer"></footer>
+<script type="module" src="js/pages/journal.js"></script>
+</body>
+</html>

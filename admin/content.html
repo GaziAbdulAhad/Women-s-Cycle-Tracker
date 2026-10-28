@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; connect-src 'self' https://*.workers.dev; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>কনটেন্ট (স্বাস্থ্য তথ্য) – চক্র অ্যাডমিন</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+<a class="skip" href="#main">মূল অংশে যান</a>
+<header class="site-header" id="site-header"></header>
+<main id="main" tabindex="-1">
+<h1>কনটেন্ট ব্যবস্থাপনা</h1><div class="notice" role="note">এখানে লেখা প্রকাশ করলে সাইন-ইন করা ব্যবহারকারীরা “শেখার তথ্য” পেজে দেখবেন। চিকিৎসা-সংক্রান্ত লেখা প্রকাশের আগে চিকিৎসক দিয়ে যাচাই করুন।</div><form id="aform" class="card"><label for="atitle">শিরোনাম</label><input id="atitle" maxlength="120" required><label for="abody">লেখা</label><textarea id="abody" rows="8" maxlength="6000" required></textarea><label for="astatus">অবস্থা</label><select id="astatus"><option value="draft">খসড়া</option><option value="published">প্রকাশিত</option></select><p class="row"><button class="btn" type="submit">সেভ করুন</button><button class="btn alt" id="cancelBtn" type="button" hidden>বাতিল</button></p></form><div id="msg" role="status" aria-live="polite"></div><div class="card"><h2>সব লেখা</h2><div id="list"></div></div>
+</main>
+<footer class="site-footer" id="site-footer"></footer>
+<script type="module" src="../js/admin/content.js"></script>
+</body>
+</html>

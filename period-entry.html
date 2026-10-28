@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; connect-src 'self' https://*.workers.dev; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>মাসিক এন্ট্রি – চক্র</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<a class="skip" href="#main">মূল অংশে যান</a>
+<header class="site-header" id="site-header"></header>
+<main id="main" tabindex="-1">
+<h1>মাসিক এন্ট্রি</h1><form id="pform" class="card"><label for="start">মাসিকের প্রথম দিন</label><input type="date" id="start" required><label for="end">শেষ দিন (জানা থাকলে)</label><input type="date" id="end"><label for="notes">নোট (ঐচ্ছিক)</label><textarea id="notes" rows="2" maxlength="500"></textarea><p class="row"><button class="btn" id="saveBtn" type="submit">সেভ করুন</button><button class="btn alt" id="cancelBtn" type="button" hidden>বাতিল</button></p></form><div id="msg" role="status" aria-live="polite"></div><div class="card"><h2>আপনার মাসিকের তালিকা</h2><div id="list"></div></div>
+</main>
+<footer class="site-footer" id="site-footer"></footer>
+<script type="module" src="js/pages/period-entry.js"></script>
+</body>
+</html>
