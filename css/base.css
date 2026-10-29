@@ -1,11 +1,30 @@
-:root{--bg:#faf7fb;--card:#fff;--ink:#241a2f;--mute:#6b5f7a;--line:#e5dcec;--accent:#5b2f8a;--accent-ink:#fff;--per:#b8264f;--fer:#1d7f73;--ov:#b9770e;--warn:#fff3d6;--err:#fde8ea;--ok:#e3f5ee}
-@media (prefers-color-scheme:dark){:root{--bg:#161020;--card:#211a2d;--ink:#f0e9f7;--mute:#a99dbb;--line:#3a2f49;--accent:#b99be6;--accent-ink:#1a1026;--per:#ff7a9c;--fer:#5ed0c1;--ov:#f0b45a;--warn:#3a2f12;--err:#3d1a22;--ok:#13322a}}
+:root{
+  --bg:#faf6fb;--bg2:#f0e6f7;--card:#fff;--ink:#2b2036;--mute:#6e6380;--line:#e8dff0;
+  --accent:#6b3fa0;--accent-ink:#fff;--accent-soft:#f1e8f9;
+  --per:#d6336c;--fer:#1a8f80;--ov:#d98200;
+  --warn:#fff4dc;--warn-ink:#5a3d00;--err:#fde8ec;--err-ink:#7a1230;--ok:#e2f6ee;--ok-ink:#0d5a43;
+  --shadow:0 1px 2px rgba(43,32,54,.06),0 10px 28px rgba(43,32,54,.08);--r:20px;
+  --hero:linear-gradient(135deg,#5b3394 0%,#8e44ad 55%,#d6336c 135%);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#14101b;--bg2:#1c1427;--card:#1f1829;--ink:#f1eaf8;--mute:#aa9fbd;--line:#352b44;
+  --accent:#c9aaf5;--accent-ink:#1b1228;--accent-soft:#2d2142;
+  --per:#ff7fa5;--fer:#53cbbb;--ov:#f2b85c;
+  --warn:#35290f;--warn-ink:#f5dba0;--err:#3b1822;--err-ink:#ffc4d1;--ok:#12312a;--ok-ink:#a5ecd2;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);
+  --hero:linear-gradient(135deg,#3a2466 0%,#5d2f80 55%,#8c2f58 135%);}}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;font-family:"Noto Sans Bengali","Hind Siliguri","Kalpurush",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;font-size:1rem}
-h1{font-size:1.6rem;margin:.2em 0 .4em}h2{font-size:1.2rem;margin:0 0 .6em}h3{font-size:1.05rem;margin:0 0 .4em}
-a{color:var(--accent)}p{margin:.4em 0 .8em}
-.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:8px;z-index:10}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.mute{color:var(--mute)}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;font-family:"Hind Siliguri","Noto Sans Bengali","Kalpurush",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:1.0625rem;line-height:1.7;color:var(--ink);
+  background:linear-gradient(180deg,var(--bg2) 0,var(--bg) 380px) no-repeat,var(--bg);min-height:100vh}
+h1{font-size:1.8rem;line-height:1.35;margin:.3em 0 .5em;font-weight:700}
+h2{font-size:1.25rem;line-height:1.4;margin:0 0 .6em;font-weight:700}
+h3{font-size:1.1rem;margin:0 0 .4em;font-weight:700}
+p{margin:.4em 0 .9em}
+a{color:var(--accent);text-underline-offset:3px}
+img{max-width:100%}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:8px 12px;border-radius:10px;z-index:99}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+.mute{color:var(--mute)}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.center{text-align:center}
 [hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
