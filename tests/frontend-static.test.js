@@ -15,7 +15,9 @@ test("every page: CSP meta, no inline script/handlers/styles, no unsafe CSP", ()
   for (const f of htmls) {
     const s = fs.readFileSync(path.join(root, f), "utf8");
     assert.match(s, /http-equiv="Content-Security-Policy"/, f);
-    assert.ok(!/unsafe-inline|unsafe-eval/.test(s), f);
+    assert.ok(!/script-src[^;]*unsafe|unsafe-eval/.test(s), f + " script CSP");
+    if (!["login.html", "register.html"].includes(f)) assert.ok(!/unsafe-inline/.test(s), f); // only Google\'s sign-in button needs inline styles
+    assert.match(s, /font-src 'self'/, f);
     assert.ok(!/<script(?![^>]*\ssrc=)[^>]*>/i.test(s), f + " inline script");
     assert.ok(!/\son[a-z]+\s*=/i.test(s.replace(/content="[^"]*"/g, "")), f + " inline handler");
     assert.ok(!/\sstyle\s*=/i.test(s), f + " inline style");
@@ -34,4 +36,10 @@ test("JS never uses innerHTML/eval/document.write/localStorage for sessions", ()
 test("no secrets in frontend config", () => {
   const s = fs.readFileSync(path.join(root, "js/config.js"), "utf8");
   assert.ok(!/secret|GATEWAY|APPS_SCRIPT|script\.google\.com/i.test(s.replace(/\/\/.*$/gm, "")));
+});
+test("font files referenced by css/fonts.css exist and are self-hosted", () => {
+  const c = fs.readFileSync(path.join(root, "css/fonts.css"), "utf8");
+  const urls = [...c.matchAll(/url\(([^)]+)\)/g)].map((m) => m[1]);
+  assert.ok(urls.length >= 6);
+  for (const u of urls) { assert.ok(!/^https?:/.test(u), u); assert.ok(fs.existsSync(path.join(root, "css", u)), u); }
 });
