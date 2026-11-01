@@ -1,39 +1,40 @@
-// DOM helpers. Everything is built with createElement and textContent, never HTML strings, so user text cannot become markup.
-export function h(tag, attrs = {}, ...kids) {
-  const e = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs || {})) {
-    if (v === undefined || v === null || v === false) continue;
-    if (k === "class") e.className = v;
-    else if (k.startsWith("on") && typeof v === "function") e.addEventListener(k.slice(2), v);
-    else e.setAttribute(k, v === true ? "" : String(v));
-  }
-  for (const c of kids.flat(Infinity)) if (c !== undefined && c !== null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c)));
-  return e;
+// Maps the server's English validation messages to Bengali for display. Unknown messages fall back to a generic Bengali line,
+// so English text never reaches the screen. tests/errors-bn.test.js checks every server message has a rule.
+const n = (x) => Number(x).toLocaleString("bn-BD", { useGrouping: false });
+const RULES = [
+  [/must be YYYY-MM-DD$/, () => "তারিখ ঠিক ফরম্যাটে (বছর-মাস-দিন) দিন।"],
+  [/is not a valid date$/, () => "তারিখটি বৈধ নয়।"],
+  [/^Start date cannot be in the future$/, () => "শুরুর তারিখ ভবিষ্যতের হতে পারে না।"],
+  [/^End date cannot be before start date$/, () => "শেষ দিন প্রথম দিনের আগে হতে পারে না।"],
+  [/^End date cannot be in the future$/, () => "শেষ দিন ভবিষ্যতের হতে পারে না।"],
+  [/^Date cannot be in the future$/, () => "ভবিষ্যতের তারিখ দেওয়া যাবে না।"],
+  [/^Period is longer than (\d+) days$/, (m) => "মাসিক " + n(m[1]) + " দিনের বেশি হতে পারে না। তারিখ আবার দেখুন।"],
+  [/^Another period is already recorded within (\d+) days/, (m) => "এই তারিখের " + n(m[1]) + " দিনের মধ্যে আরেকটি মাসিক আগেই লগ করা আছে।"],
+  [/^A log already exists for this date$/, () => "এই তারিখের জার্নাল আগেই আছে। সেটি সম্পাদনা করুন।"],
+  [/is too long$/, () => "লেখাটি অনেক বড়, ছোট করুন।"],
+  [/must be text$/, () => "এখানে শুধু লেখা দেওয়া যাবে।"],
+  [/^Invalid flowLevel$/, () => "রক্তপাতের মান ঠিক নয়।"],
+  [/^Invalid mood$/, () => "মেজাজের মান ঠিক নয়।"],
+  [/^sleepHours must be 0-24$/, () => "ঘুমের সময় ০ থেকে ২৪ ঘণ্টার মধ্যে দিন।"],
+  [/^symptoms must be a list/, () => "উপসর্গ সর্বোচ্চ ২০টি দেওয়া যাবে।"],
+  [/^Empty symptom$/, () => "খালি উপসর্গ দেওয়া যাবে না।"],
+  [/^Invalid timezone$/, () => "টাইমজোন ঠিক নয়।"],
+  [/^Invalid language$/, () => "ভাষা ঠিক নয়।"],
+  [/^cycleLengthDefault must be (\d+)-(\d+)$/, (m) => "সাধারণ চক্র " + n(m[1]) + " থেকে " + n(m[2]) + " দিনের মধ্যে দিন।"],
+  [/^lutealLength must be (\d+)-(\d+)$/, (m) => "লুটিয়াল পর্যায় " + n(m[1]) + " থেকে " + n(m[2]) + " দিনের মধ্যে দিন।"],
+  [/^Cycle length and luteal length are inconsistent$/, () => "চক্রের দৈর্ঘ্য আর লুটিয়াল পর্যায়ের দৈর্ঘ্য মিলছে না। দুটির পার্থক্য অন্তত ৬ দিন হতে হবে।"],
+  [/^Invalid ageBand$/, () => "বয়সের পরিসর ঠিক নয়।"],
+  [/^Confirmation required$/, () => "নিশ্চিত করা দরকার।"],
+  [/^(limit|offset) must be/, () => "অনুরোধ ঠিক নয়।"],
+  [/^(Invalid data|Invalid type|Invalid channel|enabled must be|maintenanceMode must be|daysBefore must be|Invalid policyVersion|Invalid consentTypes|Invalid userId|Invalid status)/, () => "দেওয়া তথ্য ঠিক নয়।"],
+  [/is invalid$/, () => "দেওয়া তথ্য ঠিক নয়।"],
+  [/^title and body are required$/, () => "শিরোনাম ও লেখা দুটিই দিন।"],
+  [/^You cannot change your own status$/, () => "নিজের অবস্থা নিজে বদলানো যায় না।"],
+];
+export const GENERIC = "তথ্য গ্রহণ করা যায়নি। দেওয়া তথ্য আবার দেখে চেষ্টা করুন।";
+export function bnMessage(en) {
+  const s = String(en || "");
+  for (const [re, f] of RULES) { const m = re.exec(s); if (m) return f(m); }
+  return null;
 }
-export const $ = (s, r = document) => r.querySelector(s);
-export const mount = (el, ...kids) => el.replaceChildren(...kids.flat(Infinity).filter((k) => k !== null && k !== undefined && k !== false));
-export const bn = (n) => Number(n).toLocaleString("bn-BD", { useGrouping: false });
-export const fmtDate = (iso, o = {}) => new Date(iso + "T12:00:00Z").toLocaleDateString("bn-BD", { timeZone: "UTC", day: "numeric", month: "long", ...o });
-export const fmtRange = (a, b, o = {}) => fmtDate(a, o) + " – " + fmtDate(b, o);
-export function todayIn(tz) {
-  try { return new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date()); } catch { return new Intl.DateTimeFormat("en-CA").format(new Date()); }
-}
-export const isIso = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
-export const loading = (el) => mount(el, h("p", { class: "mute", role: "status" }, h("span", { class: "spin" }), "লোড হচ্ছে…"));
-export function showError(el, err, retry) {
-  mount(el, h("div", { class: "notice err", role: "alert" }, h("p", {}, (err && err.message) || "কিছু ভুল হয়েছে।"), retry ? h("button", { class: "btn alt", type: "button", onclick: retry }, "আবার চেষ্টা করুন") : null));
-}
-export function say(el, msg, kind = "ok") { mount(el, msg ? h("span", { class: "notice " + kind }, msg) : null); }
-export function stat(label, value, kind) {
-  return h("div", { class: "card stat" }, h("span", { class: "mute" }, label), h("strong", {}, value),
-    kind ? h("span", { class: "badge " + kind }, kind === "est" ? "আনুমানিক" : "প্রকৃত") : null);
-}
-export function svg(tag, attrs = {}, ...kids) {
-  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
-  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
-  for (const c of kids) e.append(c.nodeType ? c : document.createTextNode(String(c)));
-  return e;
-}
-
-const ICONS = { home: "M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z", calendar: "M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM4 10h16M8 2v4M16 2v4", plus: "M12 5v14M5 12h14", book: "M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5zM4 21.5V19", menu: "M4 7h16M4 12h16M4 17h16" };
-export const icon = (name) => svg("svg", { viewBox: "0 0 24 24", class: "ico", "aria-hidden": "true", focusable: "false" }, svg("path", { d: ICONS[name], fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round" }));
+export const displayMessage = (en) => bnMessage(en) || GENERIC;
