@@ -16,7 +16,7 @@ test("every page: CSP meta, no inline script/handlers/styles, no unsafe CSP", ()
     const s = fs.readFileSync(path.join(root, f), "utf8");
     assert.match(s, /http-equiv="Content-Security-Policy"/, f);
     assert.ok(!/script-src[^;]*unsafe|unsafe-eval/.test(s), f + " script CSP");
-    if (!["login.html", "register.html"].includes(f)) assert.ok(!/unsafe-inline/.test(s), f); // only Google\'s sign-in button needs inline styles
+    assert.ok(!/unsafe-inline/.test(s), f + " (Google\'s official CSP guide needs no unsafe-inline)");
     assert.match(s, /font-src 'self'/, f);
     assert.ok(!/<script(?![^>]*\ssrc=)[^>]*>/i.test(s), f + " inline script");
     assert.ok(!/\son[a-z]+\s*=/i.test(s.replace(/content="[^"]*"/g, "")), f + " inline handler");
