@@ -2,7 +2,7 @@ import { requireAuth } from "../auth.js";
 import { initShell } from "../shell.js";
 import { h, $, mount, bn, fmtDate, loading, showError, stat } from "../dom.js";
 import { loadCycles } from "../data.js";
-import { cycleStats, cycleLengths, daysBetween, LIMITS } from "../cycle-engine.js";
+import { cycleStats, cycleLengths, daysBetween, isIrregular } from "../cycle-engine.js";
 import { WARN } from "../text.js";
 
 async function main() {
@@ -15,7 +15,7 @@ async function main() {
     const starts = asc.map((c) => c.actualStartDate), st = cycleStats(starts), lens = cycleLengths(starts).slice(-12), max = Math.max(1, ...lens);
     const v = (x) => (x === null ? "—" : bn(x) + " দিন");
     mount(root,
-      st.variability !== null && st.variability > LIMITS.irregularRange ? h("div", { class: "notice", role: "note" }, WARN.IRREGULAR_CYCLES) : null,
+      isIrregular(st.variability, s.user && s.user.ageBand) ? h("div", { class: "notice", role: "note" }, WARN.IRREGULAR_CYCLES) : null,
       h("div", { class: "grid" }, stat("গড় চক্র", v(st.average)), stat("সবচেয়ে ছোট", v(st.min)), stat("সবচেয়ে বড়", v(st.max)), stat("ওঠানামা (বড় − ছোট)", v(st.variability)), stat("রেকর্ড করা মাসিক", bn(cycles.length))),
       h("div", { class: "card" }, h("h2", {}, "সাম্প্রতিক চক্রের দৈর্ঘ্য"), lens.length ? lens.map((n) => { const b = h("div", { class: "b" }); b.style.width = Math.round((n / max) * 100) + "%"; return h("div", { class: "bar-row" }, h("span", { class: "mute" }, bn(n) + " দিন"), b); }) : h("p", { class: "mute" }, "চক্রের দৈর্ঘ্য দেখতে অন্তত দুটি মাসিক লগ করুন।")),
       h("div", { class: "card" }, h("h2", {}, "সব মাসিক"), h("div", { style: null }, h("table", {}, h("thead", {}, h("tr", {}, ["শুরু", "মাসিকের সময়", "চক্রের দৈর্ঘ্য"].map((t) => h("th", { scope: "col" }, t)))),
