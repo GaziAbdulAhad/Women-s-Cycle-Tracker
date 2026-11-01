@@ -14,6 +14,7 @@ export const $ = (s, r = document) => r.querySelector(s);
 export const mount = (el, ...kids) => el.replaceChildren(...kids.flat(Infinity).filter((k) => k !== null && k !== undefined && k !== false));
 export const bn = (n) => Number(n).toLocaleString("bn-BD", { useGrouping: false });
 export const fmtDate = (iso, o = {}) => new Date(iso + "T12:00:00Z").toLocaleDateString("bn-BD", { timeZone: "UTC", day: "numeric", month: "long", ...o });
+export const fmtRange = (a, b, o = {}) => fmtDate(a, o) + " – " + fmtDate(b, o);
 export function todayIn(tz) {
   try { return new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date()); } catch { return new Intl.DateTimeFormat("en-CA").format(new Date()); }
 }
