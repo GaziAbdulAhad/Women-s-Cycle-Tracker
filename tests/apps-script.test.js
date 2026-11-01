@@ -271,3 +271,24 @@ test("delete account: needs confirmation, removes all of MY rows only, audited",
   assert.ok(call(F, "admin.getAuditLogs", { limit: 100 }).data.items.some((x) => x.action === "user.delete" && x.actorUserId === D.sub));
   assert.equal(call(D, "cycles.list").data.total, 0); // signing in again starts a brand-new empty account
 });
+
+// ================= Step 1: personal cycle settings in the profile =================
+const P1 = mk(10); call(P1, "user.me");
+test("profile: personal cycle settings saved, cleared, validated; defaults are null", () => {
+  const me = call(P1, "user.me").data;
+  assert.deepEqual([me.cycleLengthDefault, me.lutealLength, me.ageBand], [null, null, ""]);
+  const r = call(P1, "user.updateProfile", { cycleLengthDefault: 32, lutealLength: 12, ageBand: "26_41" }).data;
+  assert.deepEqual([r.cycleLengthDefault, r.lutealLength, r.ageBand], [32, 12, "26_41"]);
+  assert.equal(call(P1, "user.me").data.cycleLengthDefault, 32);
+  const cleared = call(P1, "user.updateProfile", { cycleLengthDefault: null, lutealLength: "" }).data;
+  assert.deepEqual([cleared.cycleLengthDefault, cleared.lutealLength, cleared.ageBand], [null, null, "26_41"]);
+  for (const p of [{ cycleLengthDefault: 10 }, { cycleLengthDefault: 91 }, { cycleLengthDefault: 28.5 }, { cycleLengthDefault: "28" }, { lutealLength: 7 }, { lutealLength: 19 }, { ageBand: "teen" }, { ageBand: 5 }]) assert.equal(code(call(P1, "user.updateProfile", p)), "VALIDATION_ERROR", JSON.stringify(p));
+  call(P1, "user.updateProfile", { cycleLengthDefault: 21, lutealLength: null });
+  assert.equal(code(call(P1, "user.updateProfile", { lutealLength: 16 })), "VALIDATION_ERROR"); // 21 - 16 < 6
+});
+test("profile settings are private to the user and included in the export", () => {
+  call(P1, "user.updateProfile", { cycleLengthDefault: 30, lutealLength: 13, ageBand: "42_45" });
+  assert.equal(call(E, "user.me").data.cycleLengthDefault, null);
+  const ex = call(P1, "user.exportData").data.profile; assert.deepEqual([ex.cycleLengthDefault, ex.lutealLength, ex.ageBand], [30, 13, "42_45"]);
+  assert.ok(!JSON.stringify(call(F, "admin.listUsers", { limit: 100 }).data).includes("42_45")); // admin lists show no health-related profile data
+});
