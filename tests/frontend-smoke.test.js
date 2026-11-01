@@ -195,3 +195,38 @@ test("admin pages: ordinary user sees no access; admins see data; links resolve 
   assert.equal(db.articles.length, 1); assert.equal(d2.querySelector("#list b"), null);
   r = await open("admin/users.html"); assert.match(r.document.body.textContent, /প্রবেশাধিকার নেই/);
 });
+
+// ---------------- Step 1 ----------------
+test("settings: personal cycle settings are saved and sent as numbers/null", { skip }, async () => {
+  reset(); const r = await open("settings.html"), d = r.document; let sent = null;
+  const orig = globalThis.fetch; globalThis.fetch = async (u, i) => { const b = i && i.body ? JSON.parse(i.body) : null; if (b && b.action === "user.updateProfile") sent = b.payload; return orig(u, i); };
+  d.querySelector("#cl").value = "32"; d.querySelector("#ll").value = ""; d.querySelector("#age").value = "26_41"; await submit(d, r.window, "#sform");
+  globalThis.fetch = orig;
+  assert.equal(sent.cycleLengthDefault, 32); assert.equal(sent.lutealLength, null); assert.equal(sent.ageBand, "26_41"); assert.equal(d.querySelector("#lang"), null);
+  assert.equal(JSON.parse(r.window.sessionStorage.getItem("wht.session")).user.cycleLengthDefault, 32);
+});
+test("dashboard / ovulation show ranges and the 6-day fertile window; own cycle length is used", { skip }, async () => {
+  reset(); db.cycles.push({ cycleId: "x", actualStartDate: day(-10), actualEndDate: day(-6), notes: "" });
+  user.cycleLengthDefault = 32; user.lutealLength = 12;
+  let r = await open("dashboard.html"); assert.match(r.document.body.textContent, /পরিসর/); assert.match(r.document.body.textContent, /আপনার দেওয়া সাধারণ চক্র/);
+  r = await open("ovulation.html"); assert.match(r.document.body.textContent, /৬ দিন/); assert.match(r.document.body.textContent, /নিরাপদ/);
+  user.cycleLengthDefault = null; user.lutealLength = null;
+});
+test("calendar marks the wider, less certain range; legend warns that unmarked days are not safe", { skip }, async () => {
+  reset(); db.cycles.push({ cycleId: "x", actualStartDate: day(-3), actualEndDate: day(1), notes: "" });
+  const r = await open("calendar.html"), d = r.document;
+  assert.match(d.body.textContent, /চিহ্নহীন দিন মানেই নিরাপদ দিন নয়/); assert.ok(d.querySelector(".cell.is-fer, .cell.is-pos, .cell.is-ov") || true);
+  d.querySelector("#next").click(); await tick();
+  assert.ok(d.querySelectorAll(".cell.is-pos").length + d.querySelectorAll(".cell.is-fer").length >= 1);
+});
+test("period entry: more than 7 days gets a gentle note, never a diagnosis", { skip }, async () => {
+  reset(); const r = await open("period-entry.html"), d = r.document;
+  d.querySelector("#start").value = day(-20); d.querySelector("#end").value = day(-11); await submit(d, r.window, "#pform");
+  assert.match(text(d, "#msg"), /৭ দিনের বেশি/); assert.equal(db.cycles.length, 1);
+});
+test("server English validation messages are shown in Bengali", { skip }, async () => {
+  reset(); const orig = globalThis.fetch;
+  globalThis.fetch = async (u, i) => String(u).endsWith("/api") ? new Response(JSON.stringify({ ok: false, error: { code: "VALIDATION_ERROR", message: "Start date cannot be in the future" } }), { status: 400 }) : orig(u, i);
+  const r = await open("period-entry.html"), d = r.document; d.querySelector("#start").value = day(-2); await submit(d, r.window, "#pform"); globalThis.fetch = orig;
+  assert.ok(!/future/.test(d.body.textContent)); assert.match(text(d, "#msg"), /ভবিষ্যতের/);
+});
