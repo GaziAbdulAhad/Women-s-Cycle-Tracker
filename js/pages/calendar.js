@@ -2,7 +2,7 @@ import { requireAuth } from "../auth.js";
 import { initShell } from "../shell.js";
 import { h, $, mount, bn, fmtDate, todayIn, showError } from "../dom.js";
 import { loadCycles, loadLogs } from "../data.js";
-import { buildModel, dayInfo } from "../calendar-model.js";
+import { buildModel, dayInfo, modelOptions } from "../calendar-model.js";
 import { addDays } from "../cycle-engine.js";
 import { logSummary } from "../text.js";
 
@@ -15,7 +15,7 @@ async function main() {
   initShell({ isPrivate: true });
   const today = todayIn(s.user && s.user.timezone), st = { view: "month", cursor: today, sel: today }, logs = new Map(), loaded = new Set();
   let model;
-  try { model = buildModel(await loadCycles(), today); } catch (e) { showError($("#err"), e, main); return; }
+  try { model = buildModel(await loadCycles(), today, modelOptions(s.user)); } catch (e) { showError($("#err"), e, main); return; }
 
   function range() {
     if (st.view === "week") { const a = addDays(st.cursor, -dow(st.cursor)); return [a, addDays(a, 6)]; }
@@ -34,9 +34,10 @@ async function main() {
       if (i.actual) { parts.push("প্রকৃত মাসিক"); marks.push("●"); }
       if (i.predictedPeriod) { parts.push("সম্ভাব্য মাসিক (আনুমানিক)"); marks.push("○"); }
       if (i.fertile) { parts.push("উর্বর সময় (আনুমানিক)"); marks.push("~"); }
+      if (i.possible) { parts.push("সম্ভাব্য উর্বর পরিসর (আনুমানিক, কম নিশ্চিত)"); marks.push("·"); }
       if (i.ovulation) { parts.push("সম্ভাব্য ডিম্বস্ফোটন (আনুমানিক)"); marks.push("★"); }
       if (logs.has(d)) { parts.push("জার্নাল আছে"); marks.push("✎"); }
-      const cls = ["cell", i.actual && "is-per", i.predictedPeriod && "is-pp", i.fertile && "is-fer", i.ovulation && "is-ov", d === today && "today", d === st.sel && "sel", st.view === "month" && d.slice(0, 7) !== st.cursor.slice(0, 7) && "out"].filter(Boolean).join(" ");
+      const cls = ["cell", i.actual && "is-per", i.predictedPeriod && "is-pp", i.fertile && "is-fer", i.possible && "is-pos", i.ovulation && "is-ov", d === today && "today", d === st.sel && "sel", st.view === "month" && d.slice(0, 7) !== st.cursor.slice(0, 7) && "out"].filter(Boolean).join(" ");
       cells.push(h("button", { type: "button", class: cls, "aria-pressed": String(d === st.sel), "aria-label": fmtDate(d, { year: "numeric" }) + (parts.length ? ": " + parts.join(", ") : ""), onclick: () => { st.sel = d; render(); } }, h("span", {}, bn(+d.slice(8))), h("small", {}, marks.join(" "))));
     }
     mount($("#cal"), cells);
@@ -44,6 +45,7 @@ async function main() {
     if (i.actual) lines.push("প্রকৃত মাসিক (আপনার লগ করা তথ্য)");
     if (i.predictedPeriod) lines.push("সম্ভাব্য মাসিক — আনুমানিক");
     if (i.fertile) lines.push("উর্বর সময় — আনুমানিক");
+    if (i.possible) lines.push("সম্ভাব্য উর্বর পরিসর — আনুমানিক, কম নিশ্চিত");
     if (i.ovulation) lines.push("সম্ভাব্য ডিম্বস্ফোটন — আনুমানিক");
     mount($("#details"), h("h2", {}, fmtDate(st.sel, { year: "numeric" })), lines.length ? h("ul", {}, lines.map((x) => h("li", {}, x))) : h("p", { class: "mute" }, "এই দিনে কোনো চিহ্ন নেই।"),
       l ? h("p", {}, "জার্নাল: " + (logSummary(l) || "—")) : null,
