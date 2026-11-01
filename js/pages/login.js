@@ -50,7 +50,8 @@ async function main() {
       const nonce = await fetchNonce(); await googleReady();
       window.google.accounts.id.initialize({ client_id: CONFIG.GOOGLE_CLIENT_ID, callback: onCredential, nonce, ux_mode: "popup", auto_select: false });
       box.replaceChildren();
-      window.google.accounts.id.renderButton(box, { theme: "outline", size: "large", text: register ? "signup_with" : "signin_with", locale: "bn", width: 280 });
+      const dark = typeof matchMedia === "function" && matchMedia("(prefers-color-scheme: dark)").matches;
+      window.google.accounts.id.renderButton(box, { theme: dark ? "filled_black" : "outline", size: "large", shape: "pill", text: register ? "signup_with" : "continue_with", locale: "bn", width: Math.min(400, box.clientWidth || 340) });
     } catch (e) { mount(msg, notice(e.message || "সেটআপ করা যায়নি।")); }
   }
   if (register) { box.hidden = !agree.checked; agree.addEventListener("change", () => { box.hidden = !agree.checked; }); }
