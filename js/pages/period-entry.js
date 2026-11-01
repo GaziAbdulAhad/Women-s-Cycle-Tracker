@@ -34,7 +34,7 @@ async function main() {
     if (end && end < start) return say(msg, "শেষ দিন প্রথম দিনের আগে হতে পারে না।", "err");
     const payload = { actualStartDate: start, actualEndDate: end, notes: $("#notes").value };
     $("#saveBtn").disabled = true;
-    try { await api(editing ? "cycles.update" : "cycles.create", editing ? { cycleId: editing, ...payload } : payload); reset(); say(msg, "সেভ হয়েছে। পূর্বাভাস নতুন তথ্য দিয়ে আবার হিসাব হবে।"); await refresh(); }
+    try { await api(editing ? "cycles.update" : "cycles.create", editing ? { cycleId: editing, ...payload } : payload); const long = end && daysBetween(start, end) + 1 > 7; reset(); say(msg, "সেভ হয়েছে। পূর্বাভাস নতুন তথ্য দিয়ে আবার হিসাব হবে।" + (long ? " লক্ষ্য করুন: মাসিক ৭ দিনের বেশি লগ করা হয়েছে। এটি আপনার জন্য স্বাভাবিক কি না নিশ্চিত হতে চিকিৎসকের সঙ্গে কথা বলতে পারেন।" : "")); await refresh(); }
     catch (e) { say(msg, e.message, "err"); }
     $("#saveBtn").disabled = false;
   });
