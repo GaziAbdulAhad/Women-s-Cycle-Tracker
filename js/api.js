@@ -1,10 +1,11 @@
 import { CONFIG } from "./config.js";
 import { getSession, clearSession, goLogin } from "./auth.js";
+import { displayMessage } from "./errors-bn.js";
 
 export class ApiError extends Error { constructor(code, message, status) { super(message); this.code = code; this.status = status; } }
 const MSG = {
   NETWORK: "সার্ভারে সংযোগ করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।", UNAUTHENTICATED: "আবার সাইন ইন করুন।", RATE_LIMITED: "অনেক বেশি অনুরোধ হয়েছে। একটু পরে চেষ্টা করুন।",
-  ACCOUNT_DISABLED: "এই অ্যাকাউন্টটি এখন সচল নয়।", UPSTREAM_ERROR: "সেবাটি সাময়িকভাবে পাওয়া যাচ্ছে না। একটু পরে চেষ্টা করুন।", NOT_FOUND: "তথ্যটি পাওয়া যায়নি।", FORBIDDEN_ORIGIN: "এই ওয়েবসাইটের ঠিকানা অনুমোদিত নয়।",
+  ACCOUNT_DISABLED: "এই অ্যাকাউন্টটি এখন সচল নয়।", UPSTREAM_ERROR: "সেবাটি সাময়িকভাবে পাওয়া যাচ্ছে না। একটু পরে চেষ্টা করুন।", NOT_FOUND: "তথ্যটি পাওয়া যায়নি।", MAINTENANCE: "সেবাটি এখন রক্ষণাবেক্ষণে আছে। একটু পরে চেষ্টা করুন।", FORBIDDEN: "এই কাজের অনুমতি নেই।", FORBIDDEN_ORIGIN: "এই ওয়েবসাইটের ঠিকানা অনুমোদিত নয়।",
 };
 async function http(path, { method = "POST", body, token } = {}) {
   let res;
@@ -17,7 +18,7 @@ async function http(path, { method = "POST", body, token } = {}) {
   if (!res.ok || !out || out.ok !== true) {
     const code = (out && out.error && out.error.code) || "ERROR";
     const detail = out && out.error && out.error.message;
-    const msg = MSG[code] || (code === "VALIDATION_ERROR" || code === "CONFLICT" ? "তথ্য গ্রহণ করা যায়নি: " + detail : "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।");
+    const msg = MSG[code] || (code === "VALIDATION_ERROR" || code === "CONFLICT" ? displayMessage(detail) : "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।");
     throw new ApiError(code, msg, res.status);
   }
   return out.data;
