@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://accounts.google.com/gsi/client; style-src 'self' https://accounts.google.com/gsi/style; font-src 'self'; img-src 'self' https: data:; connect-src 'self' https://*.workers.dev https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self'; img-src 'self' https: data:; connect-src 'self' https://*.workers.dev https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>অ্যাকাউন্ট খুলুন – চক্র</title>
 <link rel="icon" href="data:,">
@@ -12,11 +12,11 @@
 <link rel="stylesheet" href="css/layout.css">
 <link rel="stylesheet" href="css/components.css">
 </head>
-<body data-mode="register">
+<body class="auth" data-mode="register">
 <a class="skip" href="#main">মূল অংশে যান</a>
 <header class="site-header" id="site-header"></header>
 <main id="main" tabindex="-1">
-<div class="auth-card card"><h1>অ্যাকাউন্ট খুলুন</h1><p>Google দিয়ে সাইন ইন করলেই অ্যাকাউন্ট তৈরি হয়ে যায়। আমরা শুধু প্রয়োজনীয় তথ্য রাখি: আপনার Google পরিচয়, ইমেইল, নাম এবং আপনার নিজের দেওয়া মাসিক ও জার্নালের তথ্য।</p><p class="notice" role="note">পরিচালক Google Sheet-এ আপনার তথ্য প্রযুক্তিগতভাবে দেখতে পারেন। বিস্তারিত <a href="privacy.html">গোপনীয়তা নীতিতে</a>।</p><label><input type="checkbox" id="agree"> আমি <a href="privacy.html">গোপনীয়তা নীতি</a>, <a href="terms.html">শর্তাবলি</a> ও <a href="disclaimer.html">চিকিৎসা সতর্কতা</a> পড়েছি এবং মেনে নিচ্ছি।</label><div id="gsi-btn" hidden></div><p><button class="btn" id="consentBtn" type="button" hidden>সম্মতি দিন ও চালিয়ে যান</button></p><div id="msg" aria-live="polite"></div><p class="mute">আগে থেকেই অ্যাকাউন্ট আছে? <a href="login.html">সাইন ইন</a></p></div>
+<div class="auth-wrap"><div class="auth-panel"><h1>অ্যাকাউন্ট খুলুন</h1><p class="auth-sub">Google দিয়ে সাইন ইন করলেই অ্যাকাউন্ট তৈরি হয়ে যায়।</p><label class="auth-consent"><input type="checkbox" id="agree"><span>আমি <a href="privacy.html">গোপনীয়তা নীতি</a>, <a href="terms.html">শর্তাবলি</a> ও <a href="disclaimer.html">চিকিৎসা সতর্কতা</a> পড়েছি এবং মেনে নিচ্ছি।</span></label><div class="notice" role="note">পরিচালক Google Sheet-এ আপনার তথ্য প্রযুক্তিগতভাবে দেখতে পারেন। <a href="privacy.html">বিস্তারিত</a></div><div id="gsi-btn" class="auth-btn-wrap" hidden></div><p><button class="btn auth-big" id="consentBtn" type="button" hidden>সম্মতি দিন ও চালিয়ে যান</button></p><div id="msg" aria-live="polite"></div><p class="auth-links">আগে থেকেই অ্যাকাউন্ট আছে? <a href="login.html">সাইন ইন</a></p><ul class="auth-points"><li>শুধু প্রয়োজনীয় তথ্য: Google পরিচয়, ইমেইল, নাম ও আপনার নিজের দেওয়া মাসিক-জার্নাল</li><li>তথ্য ডাউনলোড ও অ্যাকাউন্ট মুছে ফেলা যায়</li></ul></div></div>
 </main>
 <footer class="site-footer" id="site-footer"></footer>
 <script id="gsi" src="https://accounts.google.com/gsi/client" async defer></script>
