@@ -70,3 +70,20 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 8px
 #gsi-btn{display:flex;justify-content:center;margin:20px 0;min-height:46px}
 #gsi-btn svg{max-width:24px;max-height:24px}
 @media print{.site-header,.site-footer,.skip,.no-print,.nav{display:none!important}body{background:#fff;color:#000}.card{break-inside:avoid;border-color:#999;background:#fff;box-shadow:none}}
+
+/* auth pages: minimal, centred, big rounded controls */
+body.auth .nav,body.auth .who{display:none}
+body.auth .site-header{position:static;background:transparent;border-bottom:0}
+body.auth .bar{justify-content:center;padding-top:30px}
+body.auth .brand{font-size:1.7rem}
+.auth-wrap{display:flex;justify-content:center;padding:6px 0 30px}
+.auth-panel{width:100%;max-width:420px;text-align:center}
+.auth-panel h1{font-size:1.8rem;margin:.5em 0 .2em}
+.auth-sub{color:var(--mute);margin:0 0 26px}
+.auth-btn-wrap{display:flex;justify-content:center;min-height:52px;margin:4px 0 14px}
+.auth-consent{display:flex;gap:12px;align-items:flex-start;text-align:left;font-weight:400;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:14px 18px;margin:0 0 14px;cursor:pointer}
+.auth-consent input{margin-top:6px;flex:none}
+.auth-big{width:100%;min-height:54px;font-size:1.05rem}
+.auth-links{margin:18px 0 0;color:var(--mute)}
+.auth-points{list-style:none;margin:26px 0 0;padding:18px 4px 0;border-top:1px solid var(--line);text-align:left;color:var(--mute);font-size:.94rem}
+.auth-points li{margin:6px 0}.auth-points li::before{content:"✓";color:var(--fer);font-weight:700;margin-right:10px}
