@@ -32,6 +32,7 @@ span.notice{display:inline-block;margin:6px 0}
 .cell.is-per{background:var(--per);color:#fff;border-color:var(--per)}
 .cell.is-pp{border:2px dashed var(--per)}
 .cell.is-fer{background:color-mix(in srgb,var(--fer) 26%,var(--card));border-color:var(--fer)}
+.cell.is-pos{background:color-mix(in srgb,var(--fer) 10%,var(--card));border:2px dotted var(--fer)}
 .cell.is-ov{background:var(--ov);color:#1a1026;border-color:var(--ov);font-weight:700}
 .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:.84rem;color:var(--mute);margin-top:14px}
 .legend span{background:var(--accent-soft);border-radius:999px;padding:2px 12px}
