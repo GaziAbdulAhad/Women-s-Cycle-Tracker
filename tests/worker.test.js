@@ -213,3 +213,17 @@ test("a 6000-character Bengali article fits through the size limits", async () =
   const r = await api(ed.body.data.session, "admin.saveArticle", { title: "শিরোনাম", body: "ক".repeat(5900) + "\n", status: "published" });
   assert.equal(r.status, 200);
 });
+
+// ================= several allowed origins (GitHub Pages + Netlify) =================
+test("ALLOWED_ORIGIN accepts a comma-separated list; matching stays exact", async () => {
+  const saved = env.ALLOWED_ORIGIN, second = "https://site-two.example";
+  env.ALLOWED_ORIGIN = ORIGIN + " , " + second;
+  try {
+    for (const o of [ORIGIN, second]) { const r = await req("/auth/nonce", { method: "GET", origin: o }); assert.equal(r.status, 200); assert.equal(r.headers.get("Access-Control-Allow-Origin"), o); }
+    const pre = await req("/api", { method: "OPTIONS", origin: second }); assert.equal(pre.status, 204); assert.equal(pre.headers.get("Access-Control-Allow-Origin"), second);
+    for (const o of ["https://third.example", second + "/", "http://site-two.example", "*", null]) { const r = await req("/auth/nonce", { method: "GET", origin: o }); assert.equal(r.status, 403, String(o)); assert.equal(r.headers.get("Access-Control-Allow-Origin"), null); }
+    const { r, body } = await login(); assert.equal(r.status, 200); assert.ok(body.data.session);
+    env.ALLOWED_ORIGIN = "*"; assert.equal((await req("/auth/nonce", { method: "GET", origin: "https://anything.example" })).status, 403);
+    env.ALLOWED_ORIGIN = " , "; assert.equal((await req("/auth/nonce", { method: "GET" })).status, 500);
+  } finally { env.ALLOWED_ORIGIN = saved; }
+});
