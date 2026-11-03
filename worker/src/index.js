@@ -27,9 +27,14 @@ function limited(key, max, windowMs) {
   return ++h.n > max;
 }
 
+// ALLOWED_ORIGIN may hold several exact origins separated by commas (e.g. GitHub Pages + Netlify). Matching is exact:
+// no wildcards, no paths, no trailing slash. Anything else is refused.
+const allowedOrigins = (env) => String(env.ALLOWED_ORIGIN || "").split(",").map((s) => s.trim()).filter(Boolean);
+const originAllowed = (env, o) => !!o && allowedOrigins(env).includes(o);
+
 function cors(env, request) {
   const o = request.headers.get("Origin");
-  return o && o === env.ALLOWED_ORIGIN ? { "Access-Control-Allow-Origin": o, Vary: "Origin" } : { Vary: "Origin" };
+  return originAllowed(env, o) ? { "Access-Control-Allow-Origin": o, Vary: "Origin" } : { Vary: "Origin" };
 }
 function reply(env, request, body, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", ...cors(env, request) } });
@@ -69,12 +74,12 @@ function relay(env, request, out, requestId) {
 
 async function route(request, env, requestId) {
   for (const k of ["GOOGLE_CLIENT_ID", "ALLOWED_ORIGIN", "APPS_SCRIPT_URL", "GATEWAY_SECRET"]) if (!env[k]) fail(500, "SERVER_MISCONFIGURED", "Server is not configured");
-  if (!env.SESSIONS) fail(500, "SERVER_MISCONFIGURED", "Server is not configured");
+  if (!env.SESSIONS || !allowedOrigins(env).length) fail(500, "SERVER_MISCONFIGURED", "Server is not configured");
   const { pathname } = new URL(request.url), method = request.method;
   if (pathname === "/health" && method === "GET") return reply(env, request, { ok: true, requestId });
 
   // Browsers always send Origin on cross-origin calls. Anything else is refused.
-  if (request.headers.get("Origin") !== env.ALLOWED_ORIGIN) fail(403, "FORBIDDEN_ORIGIN", "Origin not allowed");
+  if (!originAllowed(env, request.headers.get("Origin"))) fail(403, "FORBIDDEN_ORIGIN", "Origin not allowed");
   if (method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors(env, request), "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Max-Age": "600" } });
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
 
