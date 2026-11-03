@@ -15,3 +15,4 @@
 | "Exception: Service invoked too many times" | Apps Script quotas; reduce traffic or move off Sheets |
 | Reminder e-mails not arriving | Trigger not installed, mail quota, user channel set to in-app, spam folder; triggers can be delayed |
 | Sessions end unexpectedly | 2-hour session lifetime; tab closed (sessionStorage); KV revocation lag up to ~1 minute |
+| Works on one site (GitHub Pages) but not another (Netlify) | `ALLOWED_ORIGIN` lists only one origin. Use a comma-separated list, add every origin to Google Cloud Authorized JavaScript origins, and re-run `npx wrangler deploy` |

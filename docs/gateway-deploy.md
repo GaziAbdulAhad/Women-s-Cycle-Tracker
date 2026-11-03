@@ -5,7 +5,7 @@ Needs: a Cloudflare account (the Workers/KV free tiers have limits that change �
 1. **Google OAuth client** (Google Cloud Console → APIs & Services → Credentials → OAuth client ID → *Web application*). Add your GitHub Pages origin under *Authorized JavaScript origins* (scheme + host only, e.g. `https://username.github.io`). Copy the Client ID. No client secret is needed or used.
 2. `cd worker && npm i -D wrangler && npx wrangler login`
 3. `npx wrangler kv namespace create SESSIONS` → put the returned id into `wrangler.toml`.
-4. Edit `wrangler.toml`: `GOOGLE_CLIENT_ID`, `ALLOWED_ORIGIN` (exactly the origin from step 1).
+4. Edit `wrangler.toml`: `GOOGLE_CLIENT_ID`, `ALLOWED_ORIGIN` (exactly the origin from step 1). To serve the site from several places, list the origins separated by commas, e.g. `ALLOWED_ORIGIN = "https://username.github.io,https://my-site.netlify.app"`; every one of them must also be an Authorized JavaScript origin in Google Cloud.
 5. Secrets (never commit): `npx wrangler secret put GATEWAY_SECRET` (the SAME value as the Apps Script `GATEWAY_SECRET`) and `npx wrangler secret put APPS_SCRIPT_URL`.
 6. `npx wrangler deploy` → note the `https://….workers.dev` URL (this becomes `API_BASE_URL` in the frontend).
 7. Smoke test: `curl https://<worker>/health` → `{"ok":true,...}`. Browser-only routes need the Origin header, e.g. `curl -H "Origin: https://username.github.io" https://<worker>/auth/nonce`.
