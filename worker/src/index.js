@@ -17,9 +17,15 @@ const STATUS = { VALIDATION_ERROR: 400, BAD_REQUEST: 400, NOT_FOUND: 404, CONFLI
 
 class HttpError extends Error { constructor(status, code, message) { super(message); this.status = status; this.code = code; } }
 
-// Best-effort, per-isolate limiter. NOT global: add a Cloudflare WAF rate-limiting rule for real protection.
+// Rate limiting. Preferred: Cloudflare's Workers Rate Limiting binding (RL_NONCE / RL_LOGIN / RL_API in wrangler.toml): one counter
+// per key and per Cloudflare location, shared by all isolates there. It is a loose filter, not a strict global limit.
+// Fallback when a binding is missing (or errors): a per-isolate in-memory counter with the numbers below.
 const hits = new Map();
-function limited(key, max, windowMs) {
+async function limited(env, binding, key, max, windowMs) {
+  const rl = env[binding];
+  if (rl && typeof rl.limit === "function") {
+    try { return !(await rl.limit({ key })).success; } catch { /* fall back to the local counter */ }
+  }
   const now = Date.now();
   if (hits.size > 5000) for (const [k, v] of hits) if (v.reset < now) hits.delete(k);
   let h = hits.get(key);
@@ -84,11 +90,11 @@ async function route(request, env, requestId) {
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
 
   if (pathname === "/auth/nonce" && method === "GET") {
-    if (limited("nonce:" + ip, 30, 600000)) fail(429, "RATE_LIMITED", "Too many requests");
+    if (await limited(env, "RL_NONCE", "nonce:" + ip, 30, 600000)) fail(429, "RATE_LIMITED", "Too many requests");
     return reply(env, request, { ok: true, data: { nonce: await issueNonce(env) }, requestId });
   }
   if (pathname === "/auth/login" && method === "POST") {
-    if (limited("login:" + ip, 10, 600000)) fail(429, "RATE_LIMITED", "Too many requests");
+    if (await limited(env, "RL_LOGIN", "login:" + ip, 10, 600000)) fail(429, "RATE_LIMITED", "Too many requests");
     const body = await readJson(request);
     let claims;
     try { claims = await verifyGoogleIdToken(body.credential, { clientId: env.GOOGLE_CLIENT_ID }); }
@@ -108,7 +114,7 @@ async function route(request, env, requestId) {
   if (pathname === "/api" && method === "POST") {
     const s = await readSession(env, request);
     if (!s) fail(401, "UNAUTHENTICATED", "Please sign in again");
-    if (limited("api:" + s.sub, 120, 60000)) fail(429, "RATE_LIMITED", "Too many requests");
+    if (await limited(env, "RL_API", "api:" + s.sub, 120, 60000)) fail(429, "RATE_LIMITED", "Too many requests");
     const body = await readJson(request);
     if (typeof body.action !== "string" || !ALLOWED_ACTIONS.has(body.action)) fail(400, "UNKNOWN_ACTION", "Unknown action");
     const payload = body.payload === undefined ? {} : body.payload;
